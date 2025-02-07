@@ -1,0 +1,4 @@
+kubernetes==29.0.0
+python-dotenv==1.0.1
+azure-core==1.30.2
+azure-storage-blob==12.20.0

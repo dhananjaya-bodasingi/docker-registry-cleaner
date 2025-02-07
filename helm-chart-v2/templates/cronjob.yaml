@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.cronjob.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit | default 3 }}  # Default to 3 if not provided
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit | default 1 }}  # Default to 1 if not provided
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ .Values.cronjob.name }}
+          imagePullSecrets:
+          - name: {{ .Values.secret.registryCredentials.name }}
+          containers:
+          - name: docker-lister
+            image: "{{ .Values.cronjob.image.repository }}:{{ .Values.cronjob.image.tag }}"
+            resources:
+              requests: # min resource for docker-lister (py script)
+                memory: "{{ .Values.cronjob.resources.requests.memory }}"
+                cpu: "{{ .Values.cronjob.resources.requests.cpu }}"
+              limits: # max resource for docker-lister (py script)
+                memory: "{{ .Values.cronjob.resources.limits.memory }}"
+                cpu: "{{ .Values.cronjob.resources.limits.cpu }}"
+            volumeMounts:
+            - name: dotenv-file-mount
+              mountPath: {{ .Values.cronjob.volumeMounts.path }}
+              subPath: {{ .Values.cronjob.volumeMounts.subPath }}
+              readOnly: true
+          restartPolicy: OnFailure
+          volumes:
+          - name: dotenv-file-mount
+            secret:
+              secretName: {{ .Values.secret.dotenvSecret.name }}

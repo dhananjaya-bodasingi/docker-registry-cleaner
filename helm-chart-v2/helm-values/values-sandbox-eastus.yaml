@@ -1,0 +1,12 @@
+dotenvSecret:
+  name: dotenv-file-secret
+  data:
+    envContent: "<value>" # Base64 encoded .env content
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "500m"
+  limits:
+    memory: "512Mi"
+    cpu: "1000m"

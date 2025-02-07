@@ -1,0 +1,3 @@
+blob_sas_url="https://<storage-accoun-name>.blob.core.windows.net/?<SAS-TOKEN>"
+unique_aks_id=local-dev-environment
+sas_token="<SAS-TOKEN>"

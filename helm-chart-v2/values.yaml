@@ -1,0 +1,33 @@
+namespace: docker-registry-ns
+
+secret:
+  dotenvSecret:
+    name: dotenv-file-secret
+    data:
+      envContent: "<value>" # Base64 encoded .env content
+
+  registryCredentials:
+    name: regcred
+    dockerconfigjson: "<value>" # Base64 encoded .dockerconfigjson content
+
+cronjob:
+  name: docker-registry-lister
+  schedule: "5 * * * *"
+  image:
+    repository: registry.<domain>.com/<domain>-ops/docker-lister-job
+    tag: 1.0.5
+  volumeMounts:
+    path: /usr/.env
+    subPath: .env
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "1000m"
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+
+rbac:
+  serviceAccountName: docker-registry-lister
+  clusterRoleName: pod-description-reader
+  clusterRoleBindingName: docker-registry-lister-role-binding
